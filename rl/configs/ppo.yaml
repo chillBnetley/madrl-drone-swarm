@@ -1,0 +1,27 @@
+# PPO baseline — tuned on the kinematic swarm environment
+algo: ppo
+policy: MlpPolicy
+total_timesteps: 200000
+n_envs: 4
+
+env:
+  n_agents: 3
+  area: 10.0
+  max_speed: 1.0
+  max_yaw_rate: 1.5
+  dt: 0.1
+  horizon: 600
+  n_rays: 8
+  ray_range: 3.0
+  goal_tolerance: 0.35
+  collision_radius: 0.45
+  n_obstacles: 4
+
+ppo:
+  learning_rate: 0.0003
+  n_steps: 512
+  batch_size: 256
+  gamma: 0.99
+  gae_lambda: 0.95
+  ent_coef: 0.01
+  net_arch: [128, 128]

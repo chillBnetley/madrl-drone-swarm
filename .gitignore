@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# ROS 2 / colcon
+build/
+install/
+log/
+
+# Training artefacts
+runs/
+checkpoints/
+*.ckpt
+*.zip
+*.pt
+*.pth
+
+# Logs and data
+*.csv
+*.bag
+*.db3
+*.mcap
+logs/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,116 @@
+<?xml version="1.0" ?>
+<!--
+  X500 quadrotor for Gazebo Sim (Harmonic).
+
+  IMPORTANT (bug fixed during the project):
+  each of the four motor plugins MUST declare its own <robotNamespace>.
+  Without it, Gazebo falls back on the namespace of the last loaded model and all
+  motor commands end up on e.g. /x500_lidar_2d/command/motor_speed, so the drone
+  never reacts to /x500/cmd_vel.
+-->
+<sdf version="1.9">
+  <model name="x500">
+    <self_collide>false</self_collide>
+    <pose>0 0 0.2 0 0 0</pose>
+
+    <link name="base_link">
+      <inertial>
+        <mass>2.0</mass>
+        <inertia>
+          <ixx>0.0216667</ixx>
+          <iyy>0.0216667</iyy>
+          <izz>0.04</izz>
+          <ixy>0</ixy><ixz>0</ixz><iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry><box><size>0.47 0.47 0.11</size></box></geometry>
+      </collision>
+      <visual name="visual">
+        <geometry><mesh><uri>model://x500/meshes/x500_base.dae</uri></mesh></geometry>
+      </visual>
+    </link>
+
+    <!-- Sensors -->
+    <include>
+      <uri>model://x500_lidar_2d</uri>
+    </include>
+
+    <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu">
+      <topic>imu</topic>
+    </plugin>
+
+    <plugin filename="gz-sim-navsat-system" name="gz::sim::systems::NavSat">
+      <topic>navsat</topic>
+    </plugin>
+
+    <!--
+      Motor / lift plugins. The four <robotNamespace> entries below are the fix.
+      MotorFailurePlugin is intentionally NOT included: it does not exist in the
+      standalone Gazebo Harmonic installation.
+    -->
+    <plugin filename="gz-sim-multicopter-motor-model-system"
+            name="gz::sim::systems::MulticopterMotorModel">
+      <robotNamespace>x500</robotNamespace>
+      <jointName>rotor_0_joint</jointName>
+      <linkName>rotor_0</linkName>
+      <turningDirection>ccw</turningDirection>
+      <motorNumber>0</motorNumber>
+      <motorSpeedTopic>command/motor_speed</motorSpeedTopic>
+      <commandSubTopic>command/motor_speed</commandSubTopic>
+      <motorConstant>8.54858e-06</motorConstant>
+      <maxMotorSpeed>1500</maxMotorSpeed>
+    </plugin>
+
+    <plugin filename="gz-sim-multicopter-motor-model-system"
+            name="gz::sim::systems::MulticopterMotorModel">
+      <robotNamespace>x500</robotNamespace>
+      <jointName>rotor_1_joint</jointName>
+      <linkName>rotor_1</linkName>
+      <turningDirection>cw</turningDirection>
+      <motorNumber>1</motorNumber>
+      <motorSpeedTopic>command/motor_speed</motorSpeedTopic>
+      <commandSubTopic>command/motor_speed</commandSubTopic>
+      <motorConstant>8.54858e-06</motorConstant>
+      <maxMotorSpeed>1500</maxMotorSpeed>
+    </plugin>
+
+    <plugin filename="gz-sim-multicopter-motor-model-system"
+            name="gz::sim::systems::MulticopterMotorModel">
+      <robotNamespace>x500</robotNamespace>
+      <jointName>rotor_2_joint</jointName>
+      <linkName>rotor_2</linkName>
+      <turningDirection>ccw</turningDirection>
+      <motorNumber>2</motorNumber>
+      <motorSpeedTopic>command/motor_speed</motorSpeedTopic>
+      <commandSubTopic>command/motor_speed</commandSubTopic>
+      <motorConstant>8.54858e-06</motorConstant>
+      <maxMotorSpeed>1500</maxMotorSpeed>
+    </plugin>
+
+    <plugin filename="gz-sim-multicopter-motor-model-system"
+            name="gz::sim::systems::MulticopterMotorModel">
+      <robotNamespace>x500</robotNamespace>
+      <jointName>rotor_3_joint</jointName>
+      <linkName>rotor_3</linkName>
+      <turningDirection>cw</turningDirection>
+      <motorNumber>3</motorNumber>
+      <motorSpeedTopic>command/motor_speed</motorSpeedTopic>
+      <commandSubTopic>command/motor_speed</commandSubTopic>
+      <motorConstant>8.54858e-06</motorConstant>
+      <maxMotorSpeed>1500</maxMotorSpeed>
+    </plugin>
+
+    <!-- Converts a Twist command (ROS 2 side) into motor speeds. -->
+    <plugin filename="gz-sim-multicopter-control-system"
+            name="gz::sim::systems::MulticopterVelocityControl">
+      <robotNamespace>x500</robotNamespace>
+      <commandSubTopic>cmd_vel</commandSubTopic>
+      <motorCommandTopic>command/motor_speed</motorCommandTopic>
+      <comLinkName>base_link</comLinkName>
+      <velocityGain>2.7 2.7 2.7</velocityGain>
+      <attitudeGain>4 4 0.4</attitudeGain>
+      <angularRateGain>0.8 0.8 0.2</angularRateGain>
+    </plugin>
+  </model>
+</sdf>

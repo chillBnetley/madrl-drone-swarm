@@ -1,0 +1,22 @@
+# MAPPO — multi-agent stage
+algo: mappo
+shared_parameters: true
+centralised_critic: true
+
+env:
+  n_agents: 3
+  area: 10.0
+  max_speed: 1.0
+  max_yaw_rate: 1.5
+  dt: 0.1
+  horizon: 600
+  n_rays: 8
+  ray_range: 3.0
+
+mappo:
+  lr: 0.0003
+  rollout: 128
+  gamma: 0.99
+  clip: 0.2
+  inner_epochs: 4
+  grad_clip: 0.5
