@@ -13,7 +13,7 @@ setup(
     install_requires=["setuptools", "numpy"],
     zip_safe=True,
     maintainer="Moemen Hezzi",
-    maintainer_email="momenhzez46@gmail.com",
+    maintainer_email="momenhezzi66@gmail.com",
     description="Autonomous navigation and PX4 offboard control for the X500 quadrotor",
     license="MIT",
     tests_require=["pytest"],

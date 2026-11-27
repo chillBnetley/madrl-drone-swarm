@@ -4,7 +4,7 @@
   <name>x500_navigation</name>
   <version>0.1.0</version>
   <description>Autonomous navigation and PX4 offboard control nodes for the X500 quadrotor.</description>
-  <maintainer email="momenhzez46@gmail.com">Moemen Hezzi</maintainer>
+  <maintainer email="momenhezzi66@gmail.com">Moemen Hezzi</maintainer>
   <license>MIT</license>
 
   <exec_depend>rclpy</exec_depend>
