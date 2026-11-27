@@ -46,13 +46,21 @@ def test_step_returns_gymnasium_five_tuple():
 
 
 def test_raycast_hits_known_obstacle():
-    env = make_env(n_obstacles=0, obstacles=[(5.0, 5.0, 0.5)])
+    env = make_env(n_obstacles=0, obstacles=[(2.0, 5.0, 0.5)])
     env._build_obstacles()  # noqa: SLF001 - geometry check on purpose
 
-    # From (0, 5) looking along +x, the obstacle surface is at x = 4.5.
-    assert env._raycast(np.array([0.0, 5.0]), 0.0) == pytest.approx(4.5)  # noqa: SLF001
+    # From (0, 5) looking along +x, the obstacle surface is at x = 1.5.
+    assert env._raycast(np.array([0.0, 5.0]), 0.0) == pytest.approx(1.5)  # noqa: SLF001
     # Looking the other way there is nothing within range.
     assert env._raycast(np.array([0.0, 5.0]), math.pi) == pytest.approx(env.cfg.ray_range)  # noqa: SLF001
+
+
+def test_raycast_is_capped_by_range():
+    env = make_env(n_obstacles=0, obstacles=[(5.0, 5.0, 0.5)])
+    env._build_obstacles()  # noqa: SLF001
+
+    # The surface is at 4.5 m, well past ray_range = 3.0 m.
+    assert env._raycast(np.array([0.0, 5.0]), 0.0) == pytest.approx(env.cfg.ray_range)  # noqa: SLF001
 
 
 def test_goal_inside_tolerance_terminates_with_bonus():

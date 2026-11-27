@@ -221,8 +221,10 @@ class SingleAgentWrapper:
 
     def __init__(self, env: DroneSwarmEnv):
         self.env = env
-        self.observation_space = env.observation_space
-        self.action_space = env.action_space
+        # gymnasium is optional (see the import guard above): the wrapper stays
+        # usable with plain numpy, it just cannot advertise spaces then.
+        self.observation_space = getattr(env, "observation_space", None)
+        self.action_space = getattr(env, "action_space", None)
         self._index = 0
         self._last_obs = None
         self._last_reward = 0.0
