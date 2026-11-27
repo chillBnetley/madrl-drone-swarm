@@ -1,9 +1,19 @@
 # MADRL Drone Swarm — Autonomous Navigation for an X500 Quadrotor
 
+[![CI](https://github.com/momen1231/madrl-drone-swarm/actions/workflows/ci.yml/badge.svg)](https://github.com/momen1231/madrl-drone-swarm/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Reference implementation and research toolkit for my final-year project (PFA):
 **Multi-Agent Deep Reinforcement Learning for autonomous navigation of a drone swarm**,
 developed on the **X500** quadrotor model with **ROS 2 Humble**, **Gazebo Sim (Harmonic)**
 and **PX4 SITL**.
+
+![Swarm demo](docs/media/demo.gif)
+
+*The GIF is a replay of the kinematic model in `rl/envs/drone_swarm_env.py` drawn by
+`scripts/render_demo.mjs` with a scripted goal-seeking controller — it is **not** a Gazebo
+capture and **not** a trained policy. It exists so the observation/action contract is
+visible without installing ROS.*
 
 The repository has three layers:
 
@@ -11,7 +21,7 @@ The repository has three layers:
 |---|---|---|
 | Simulation | `sim/` | X500 SDF model, Gazebo world, `ros_gz_bridge` configuration |
 | Classical control | `ros2_ws/` | ROS 2 nodes: square trajectory without odometry, PX4 offboard demo |
-| Learning | `rl/` | Gymnasium environment + PPO / MAPPO training scripts |
+| Learning | `rl/` | Gymnasium environment + PPO / SAC / MAPPO training scripts |
 
 ## Why this project
 
@@ -26,10 +36,12 @@ pipeline during evaluation.
 ```bash
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
+python rl/check_env.py                              # contract + random rollout
+python -m pytest tests -q                           # unit tests
 python rl/train_ppo.py --steps 200000 --n-envs 4
 ```
 
-The training script writes TensorBoard logs and checkpoints to `runs/`.
+The training scripts write TensorBoard logs and checkpoints to `runs/`.
 
 ## Full stack (ROS 2 Humble + Gazebo + PX4)
 
@@ -65,18 +77,56 @@ sim/bridge/x500_bridge.yaml      IMU, NavSat, 2D LiDAR, air pressure, pose -> RO
 ros2_ws/src/x500_navigation/     square_no_odom.py, offboard_demo.py
 rl/envs/drone_swarm_env.py       Multi-agent kinematic environment (Gymnasium API)
 rl/train_ppo.py                  Single-agent PPO baseline (stable-baselines3)
-rl/train_mappo.py                Shared-parameter MAPPO skeleton (torch)
+rl/train_sac.py                  Single-agent SAC baseline (stable-baselines3)
+rl/train_mappo.py                Shared-parameter MAPPO (torch)
+tests/                           pytest suite for the environment contract
+scripts/render_demo.mjs          Offline renderer for docs/media/demo.gif
 docs/                            Architecture, installation, experiments
 ```
 
-## Results so far
+## Results
 
-* Classical layer: square trajectory closed without odometry, position error kept below
-  the tolerance of the LiDAR-based correction loop (see `docs/experiments.md`).
-* Learning layer: PPO converges on the 2-D kinematic environment (~1.85 M steps,
-  see the learning curves in `docs/experiments.md`).
+Measured on the lab machine (Ubuntu 22.04, Python 3.10). Success = the agent reaches its
+goal inside `goal_tolerance`, greedy policy on the kinematic environment. Checkpoints are
+not committed; the numbers below are there to be reproduced, not trusted.
 
-Multi-agent MAPPO on the full ROS 2 / Gazebo stack is the ongoing work.
+| Run | Algorithm | Success rate | Note |
+|---|---|---|---|
+| stage 1 | SAC | **92 %** | single-agent wrapper, the best result so far |
+| v1 | MAPPO | **42 %** | first MAPPO run that learned something usable |
+| v2 | MAPPO | **8 %** | same task, changed training configuration — success collapsed |
+| v3 | MAPPO | *pending* | re-run of the v1 setup; the number is being re-measured, not estimated here |
+
+What these numbers actually taught me:
+
+* **A success rate is a cliff, not a slope.** 42 % → 8 % happened without touching the
+  environment, only the training configuration. When a metric moves that violently the
+  policy is sitting on a knife edge, and the 92 % of SAC and the 8 % of MAPPO are not two
+  points on one curve — they are two different regimes.
+* **Single-agent SAC beat multi-agent MAPPO at this budget.** Three agents sharing one
+  actor is a harder optimisation problem than one agent with its own; at a few hundred
+  thousand steps the shared policy has not seen enough per-agent data to catch up. That is
+  a sample-budget statement, not a claim that MAPPO is worse in general.
+* **The failed run is the informative one.** Keeping v2 in the table makes the load-bearing
+  knobs visible; a README that only shows 92 % hides exactly the part someone else will get
+  wrong.
+* **Classical control still carries the demo.** The square trajectory closes without any
+  odometry source (`docs/experiments.md`, E1); the learning layer is evaluated against that
+  baseline, not in isolation.
+
+Design decisions behind the environment — reward shaping, the spinning reward hack, the
+corner-trapping failure mode — are written up in [`docs/experiments.md`](docs/experiments.md).
+
+## Contributing
+
+Issues labelled [`good first issue`](https://github.com/momen1231/madrl-drone-swarm/labels/good%20first%20issue)
+are scoped to be finishable without ROS 2 or Gazebo installed. Read
+[`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request.
+
+## Citation
+
+If you use this code in academic work, cite it via [`CITATION.cff`](CITATION.cff) (GitHub
+shows a "Cite this repository" button on the sidebar).
 
 ## License
 

@@ -26,6 +26,9 @@ checkpoints/
 *.mcap
 logs/
 
+# Local only: answers for the subscription form, never published
+docs/github-form-answers.md
+
 # Editors / OS
 .vscode/
 .idea/

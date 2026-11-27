@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Setup and known pitfalls
+    url: https://github.com/momen1231/madrl-drone-swarm/blob/main/docs/installation.md
+    about: Read this first — most Gazebo / ros_gz_bridge failures are listed there.
+  - name: How to contribute
+    url: https://github.com/momen1231/madrl-drone-swarm/blob/main/CONTRIBUTING.md
+    about: Branch naming, tests to run and what makes a reviewable pull request.

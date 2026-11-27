@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use this code in academic work, please cite it using these metadata."
+type: software
+title: "MADRL Drone Swarm: multi-agent deep reinforcement learning for X500 quadrotor swarms"
+abstract: >-
+  Reference implementation of a final-year engineering project (PFA) on multi-agent
+  deep reinforcement learning for quadrotor swarm navigation. It combines an X500
+  Gazebo Sim / ROS 2 Humble simulation setup, classical baselines (LiDAR-supervised
+  square trajectory without odometry, PX4 SITL offboard control) and a
+  Gymnasium-compatible swarm environment with PPO, SAC and MAPPO training scripts
+  sharing one observation/action contract.
+authors:
+  - family-names: Hezzi
+    given-names: Moemen
+    email: momenhezzi66@gmail.com
+repository-code: "https://github.com/momen1231/madrl-drone-swarm"
+url: "https://github.com/momen1231/madrl-drone-swarm"
+license: MIT
+version: 0.1.0
+date-released: 2026-11-27
+keywords:
+  - multi-agent reinforcement learning
+  - drone swarm
+  - quadrotor
+  - MAPPO
+  - PPO
+  - SAC
+  - ROS 2
+  - Gazebo Sim
+  - PX4
